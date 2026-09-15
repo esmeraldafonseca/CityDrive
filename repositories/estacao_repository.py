@@ -47,7 +47,20 @@ class EstacaoRepository:
 
     def find_all(self):
         # TODO 5: obter todas as estações.
-        pass
+        sql = """
+                SELECT id, nome, morada, cidade, hora_abertura, hora_fecho, ativa
+                FROM estacoes
+                ORDER BY cidade, nome
+            """
+        rows = self.db.execute(sql, fetch=True)
+
+        estacoes = []
+        for row in rows:
+            estacao = Estacao.from_dict(row)
+            estacoes.append(estacao)
+
+        return estacoes
+
 
     def create(self, estacao):
         # TODO 6: inserir uma estação.
