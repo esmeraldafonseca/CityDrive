@@ -16,7 +16,7 @@ class CategoriaRepository:
 
     def find_all(self):
         # TODO 1: obter todas as categorias ordenadas pelo nome.
-        sql = "SELECT * FROM categorias_viatura ORDER BY nome;"
+        sql = "SELECT  id, nome, descricao FROM categorias_viatura ORDER BY nome"
         rows = self.db.execute(sql, fetch= True)
 
         categorias = []
@@ -29,4 +29,12 @@ class CategoriaRepository:
      
     def find_by_id(self, categoria_id):
         # TODO 2: obter uma categoria pelo ID.
-        pass
+        sql = "SELECT  id, nome, descricao FROM categorias_viatura WHERE id = %s"
+        rows = self.db.execute(sql,(categoria_id,), fetch=True)
+
+        if not rows:
+            return None
+
+
+        return Categoria.from_dict(rows[0])
+
