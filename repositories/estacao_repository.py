@@ -33,7 +33,17 @@ class EstacaoRepository:
 
     def find_by_id(self, estacao_id):
         # TODO 4: obter uma estação pelo ID.
-        pass
+        sql = """
+                SELECT id, nome, morada, cidade, hora_abertura, hora_fecho, ativa
+                FROM estacoes
+                WHERE id = %s
+            """
+        rows = self.db.execute(sql, (estacao_id,), fetch=True)
+
+        if not rows:
+            return None
+
+        return Estacao.from_dict(rows[0])
 
     def find_all(self):
         # TODO 5: obter todas as estações.
