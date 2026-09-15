@@ -77,4 +77,13 @@ class EstacaoRepository:
     
     def update(self, estacao):
         # TODO 7: atualizar uma estação.
-        pass
+        sql = """
+                UPDATE estacoes
+                SET nome = %s, morada = %s, cidade = %s, hora_abertura = %s, hora_fecho = %s, ativa = %s
+                WHERE id = %s
+            """
+        params = (estacao.nome, estacao.morada, estacao.cidade, estacao.hora_abertura, estacao.hora_fecho, estacao.ativa, estacao.id)
+
+        self.db.execute(sql, params)
+
+        return estacao
