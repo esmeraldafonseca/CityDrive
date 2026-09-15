@@ -50,7 +50,7 @@ class EstacaoRepository:
         sql = """
                 SELECT id, nome, morada, cidade, hora_abertura, hora_fecho, ativa
                 FROM estacoes
-                ORDER BY cidade, nome
+                ORDER BY nome
             """
         rows = self.db.execute(sql, fetch=True)
 
@@ -64,8 +64,17 @@ class EstacaoRepository:
 
     def create(self, estacao):
         # TODO 6: inserir uma estação.
-        pass
+        sql = """
+                INSERT INTO estacoes (nome, morada, cidade, hora_abertura, hora_fecho, ativa)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """
+        params = (estacao.nome, estacao.morada, estacao.cidade, estacao.hora_abertura, estacao.hora_fecho, estacao.ativa)
 
+        novo_id = self.db.execute(sql, params)
+
+        estacao.id = novo_id
+        return estacao
+    
     def update(self, estacao):
         # TODO 7: atualizar uma estação.
         pass
