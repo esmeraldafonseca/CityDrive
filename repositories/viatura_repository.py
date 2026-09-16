@@ -103,7 +103,16 @@ class ViaturaRepository:
 
     def create(self, viatura):
         # TODO 12: inserir uma viatura.
-        pass
+        sql = """
+                INSERT INTO viaturas (matricula, marca, modelo, categoria_id, ano, estacao_id, ativa)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """
+        params = (viatura.matricula, viatura.marca, viatura.modelo, viatura.categoria_id, viatura.ano, viatura.estacao_id, viatura.ativa)
+
+        novo_id = self.db.execute(sql, params)
+
+        viatura.id = novo_id
+        return viatura
 
 
     def update(self, viatura):
