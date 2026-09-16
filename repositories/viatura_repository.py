@@ -1,9 +1,11 @@
-# Este ficheiro contém o Repository responsável pelo acesso aos dados das
-# viaturas. Algumas operações exigem relacionar viaturas, categorias, estações
-# e reservas, pelo que neste ficheiro será necessário interpretar e construir
-# consultas SQL com JOIN e outras condições. É também aqui que deverá ser feita
-# a consulta necessária para determinar quais as viaturas disponíveis num
-# determinado período.
+"""
+Este ficheiro contém o Repository responsável pelo acesso aos dados das
+viaturas. Algumas operações exigem relacionar viaturas, categorias, estações
+e reservas, pelo que neste ficheiro será necessário interpretar e construir
+consultas SQL com JOIN e outras condições. É também aqui que deverá ser feita
+a consulta necessária para determinar quais as viaturas disponíveis num
+determinado período.
+"""
 
 from database import Database
 from models.viatura import Viatura
@@ -14,8 +16,21 @@ class ViaturaRepository:
 
     def find_by_id(self, viatura_id):
         # TODO 8: obter uma viatura, incluindo categoria e estação.
-        pass
+        sql = """
+                SELECT v.id, v.matricula, v.marca, v.modelo, v.categoria_id, v.ano, v.estacao_id, v.ativa,
+                    c.nome AS categoria_nome, e.nome AS estacao_nome, e.cidade AS cidade
+                FROM viaturas v
+                JOIN categorias_viatura c ON v.categoria_id = c.id
+                JOIN estacoes e ON v.estacao_id = e.id
+                WHERE v.id = %s
+            """
+        rows = self.db.execute(sql, (viatura_id,), fetch=True)
 
+        if not rows:
+            return None
+
+        return Viatura.from_dict(rows[0])
+            
     def find_available(self, cidade, inicio, fim):
         # TODO 9: obter viaturas ativas disponíveis no período indicado.
         pass
