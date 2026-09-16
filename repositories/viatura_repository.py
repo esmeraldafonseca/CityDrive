@@ -83,7 +83,22 @@ class ViaturaRepository:
 
     def find_all(self):
         # TODO 11: obter todas as viaturas com categoria e estação.
-        pass
+        sql = """
+                SELECT v.id, v.matricula, v.marca, v.modelo, v.categoria_id, v.ano, v.estacao_id, v.ativa,
+                    c.nome AS categoria_nome, e.nome AS estacao_nome, e.cidade AS cidade
+                FROM viaturas v
+                JOIN categorias_viatura c ON v.categoria_id = c.id
+                JOIN estacoes e ON v.estacao_id = e.id
+                ORDER BY v.marca, v.modelo
+            """
+        rows = self.db.execute(sql, fetch=True)
+
+        viaturas = []
+        for row in rows:
+            viatura = Viatura.from_dict(row)
+            viaturas.append(viatura)
+
+        return viaturas
 
 
     def create(self, viatura):
