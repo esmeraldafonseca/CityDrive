@@ -117,4 +117,13 @@ class ViaturaRepository:
 
     def update(self, viatura):
         # TODO 13: atualizar uma viatura.
-        pass
+        sql = """
+                UPDATE viaturas
+                SET matricula = %s, marca = %s, modelo = %s, categoria_id = %s, ano = %s, estacao_id = %s, ativa = %s
+                WHERE id = %s
+            """
+        params = (viatura.matricula, viatura.marca, viatura.modelo, viatura.categoria_id, viatura.ano, viatura.estacao_id, viatura.ativa, viatura.id)
+
+        self.db.execute(sql, params)
+
+        return viatura
