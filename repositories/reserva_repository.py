@@ -54,4 +54,9 @@ class ReservaRepository:
 
     def cancel(self, reserva_id):
         # TODO 19: alterar o estado da reserva para CANCELADA.
-        pass
+        sql = """
+                UPDATE reservas 
+                SET estado = 'CANCELADA' 
+                WHERE id = %s
+            """
+        self.db.execute(sql, (reserva_id,))
