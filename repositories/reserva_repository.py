@@ -32,7 +32,17 @@ class ReservaRepository:
 
     def find_by_id(self, reserva_id):
         # TODO 16: obter uma reserva pelo ID.
-        pass
+        sql = """
+                SELECT id, cliente_id, viatura_id, inicio, fim, estado, criada_em
+                FROM reservas
+                WHERE id = %s
+            """
+        rows = self.db.execute(sql, (reserva_id,), fetch=True)
+
+        if not rows:
+            return None
+
+        return Reserva.from_dict(rows[0])
 
     def find_by_cliente(self, cliente_id):
         # TODO 17: obter as reservas de um cliente.
