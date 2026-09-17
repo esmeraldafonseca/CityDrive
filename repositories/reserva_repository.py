@@ -1,8 +1,10 @@
-# Este ficheiro contém o Repository responsável pelo acesso aos dados das
-# reservas. Aqui são realizadas as operações SQL necessárias para criar,
-# consultar e cancelar reservas, assim como verificar a existência de reservas
-# que entrem em conflito com determinado período. A correta interpretação da
-# sobreposição entre intervalos de tempo é uma parte fundamental deste ficheiro.
+"""
+Este ficheiro contém o Repository responsável pelo acesso aos dados das
+reservas. Aqui são realizadas as operações SQL necessárias para criar,
+consultar e cancelar reservas, assim como verificar a existência de reservas
+que entrem em conflito com determinado período. A correta interpretação da
+sobreposição entre intervalos de tempo é uma parte fundamental deste ficheiro.
+"""
 
 from database import Database
 from models.reserva import Reserva
@@ -17,7 +19,16 @@ class ReservaRepository:
 
     def create(self, reserva):
         # TODO 15: inserir uma reserva.
-        pass
+        sql = """
+                INSERT INTO reservas (cliente_id, viatura_id, inicio, fim, estado)
+                VALUES (%s, %s, %s, %s, %s)
+            """
+        params = (reserva.cliente_id, reserva.viatura_id, reserva.inicio, reserva.fim, reserva.estado)
+
+        novo_id = self.db.execute(sql, params)
+
+        reserva.id = novo_id
+        return reserva
 
     def find_by_id(self, reserva_id):
         # TODO 16: obter uma reserva pelo ID.
