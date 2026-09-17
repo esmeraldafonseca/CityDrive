@@ -15,7 +15,17 @@ class ReservaRepository:
 
     def has_conflict(self, viatura_id, inicio, fim):
         # TODO 14: verificar sobreposição com reservas ativas.
-        pass
+        sql = """
+                SELECT 1 FROM reservas
+                WHERE viatura_id = %s
+                AND estado NOT IN ('CANCELADA', 'CONCLUIDA')
+                AND inicio < %s
+                AND fim > %s
+            """
+        params = (viatura_id, fim, inicio)
+        rows = self.db.execute(sql, params, fetch=True)
+
+        return len(rows) > 0
 
     def create(self, reserva):
         # TODO 15: inserir uma reserva.
