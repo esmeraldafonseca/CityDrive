@@ -44,13 +44,29 @@ class ReservaRepository:
 
         return Reserva.from_dict(rows[0])
 
+
     def find_by_cliente(self, cliente_id):
         # TODO 17: obter as reservas de um cliente.
         pass
 
     def find_all(self):
         # TODO 18: obter todas as reservas para administração.
-        pass
+        sql = """
+                SELECT r.id, r.cliente_id, r.viatura_id, r.inicio, r.fim, r.estado, r.criada_em,
+                    CONCAT(v.marca, ' ', v.modelo, ' (', v.matricula, ')') AS viatura_descricao,
+                    e.nome AS estacao_nome
+                FROM reservas r
+                JOIN viaturas v ON r.viatura_id = v.id
+                JOIN estacoes e ON v.estacao_id = e.id
+            """
+        rows = self.db.execute(sql, fetch=True)
+
+        reservas = []
+        for row in rows:
+            reserva = Reserva.from_dict(row)
+            reservas.append(reserva)
+
+        return reservas
 
     def cancel(self, reserva_id):
         # TODO 19: alterar o estado da reserva para CANCELADA.
