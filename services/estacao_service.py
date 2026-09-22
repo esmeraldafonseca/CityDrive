@@ -18,7 +18,15 @@ class EstacaoService:
         if not cidade or not cidade.strip():
             raise ValueError("A cidade é obrigatória.")
 
-        return self.repository.find_active_by_city(cidade.strip())
+        cidade = cidade.strip()
+
+        if len(cidade) < 2:
+            raise ValueError("A cidade deve ter pelo menos 2 caracteres.")
+
+        if any(caractere.isdigit() for caractere in cidade):
+            raise ValueError("A cidade não deve conter números.")
+
+        return self.repository.find_active_by_city(cidade)
 
     def obter_estacao(self, estacao_id):
         return self.repository.find_by_id(estacao_id)
