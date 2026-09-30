@@ -61,7 +61,15 @@ class ReservaService:
 
     def cancelar_reserva(self, reserva_id):
         # TODO 23: cancelar a reserva aplicando as regras do sistema.
-        pass
+        reserva = self.repository.find_by_id(reserva_id)
+        if reserva is None:
+            raise ValueError("A reserva indicada não existe.")
+
+        if reserva.estado in ("CANCELADA", "CONCLUIDA"):
+            raise ValueError("Esta reserva não pode ser cancelada.")
+
+        self.repository.cancel(reserva_id)
+        return True
 
 
     def obter_reserva(self, reserva_id):
