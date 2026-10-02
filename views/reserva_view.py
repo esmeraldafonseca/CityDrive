@@ -1,9 +1,3 @@
-# Este ficheiro define a View responsável pela confirmação de uma reserva.
-# A página apresenta ao utilizador um resumo da operação e permite solicitar
-# a criação da reserva. A View não deve decidir sozinha se a reserva é válida;
-# essa responsabilidade pertence ao ReservaService, que deverá aplicar todas
-# as regras de negócio antes de permitir que os dados sejam gravados.
-
 import flet as ft
 
 from services.reserva_service import ReservaService
@@ -48,8 +42,7 @@ class ReservaView:
                     ft.Row(
                         [
                             ft.OutlinedButton("Voltar", on_click=self.voltar),
-                            ft.ElevatedButton(
-                                "Confirmar reserva", on_click=self.confirmar),
+                            ft.ElevatedButton("Confirmar reserva", on_click=self.confirmar),
                         ]
                     ),
                     self.mensagem,
@@ -60,7 +53,16 @@ class ReservaView:
 
     def confirmar(self, e):
         # TODO 27: chamar ReservaService.criar_reserva e apresentar o resultado.
-        self.mensagem.value = "TODO 27: concluir a confirmação da reserva."
+        try:
+            reserva = self.service.criar_reserva(
+                self.cliente_id, self.viatura_id, self.inicio, self.fim
+            )
+        except ValueError as erro:
+            self.mensagem.value = str(erro)
+            self.page.update()
+            return
+
+        self.mensagem.value = f"Reserva criada com sucesso! (ID: {reserva.id})"
         self.page.update()
 
     def voltar(self, e):
