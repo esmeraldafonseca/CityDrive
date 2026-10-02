@@ -1,9 +1,3 @@
-# Este ficheiro define a View utilizada para pesquisar viaturas disponíveis.
-# O utilizador indica a cidade e o período pretendido, sendo responsabilidade
-# desta View recolher e converter esses valores, solicitar a pesquisa ao Service
-# e apresentar os resultados recebidos. A lógica que determina efetivamente
-# se uma viatura está disponível não deve ser implementada diretamente aqui.
-
 import flet as ft
 from datetime import datetime
 
@@ -18,18 +12,9 @@ class PesquisaView:
         self.cliente_id = cliente_id
         self.service = ViaturaService()
 
-        self.cidade = ft.TextField(
-            label="Cidade", value="Castelo Branco", width=280)
-        self.inicio = ft.TextField(
-            label="Início",
-            hint_text="AAAA-MM-DD HH:MM",
-            width=230,
-        )
-        self.fim = ft.TextField(
-            label="Fim",
-            hint_text="AAAA-MM-DD HH:MM",
-            width=230,
-        )
+        self.cidade = ft.TextField(label="Cidade", value="Castelo Branco", width=280)
+        self.inicio = ft.TextField(label="Início", hint_text="AAAA-MM-DD HH:MM", width=230)
+        self.fim = ft.TextField(label="Fim", hint_text="AAAA-MM-DD HH:MM", width=230)
 
         self.resultados = ft.Column(spacing=10)
         self.mensagem = ft.Text()
@@ -61,8 +46,7 @@ class PesquisaView:
         self.page.add(
             ft.Column(
                 [
-                    navigation_bar(self.page, self.cliente_id,
-                                   current="pesquisa"),
+                    navigation_bar(self.page, self.cliente_id, current="pesquisa"),
                     app_header(
                         "Pesquisa de viaturas",
                         "O sistema deverá apresentar apenas viaturas disponíveis no período selecionado.",
@@ -80,18 +64,57 @@ class PesquisaView:
     def pesquisar(self, e):
         # TODO 25:
         # - converter as datas;
+        self.resultados.controls.clear()
+        self.mensagem.value = ""
+
+        try:
+            inicio = datetime.strptime(self.inicio.value, "%Y-%m-%d %H:%M")
+            fim = datetime.strptime(self.fim.value, "%Y-%m-%d %H:%M")
+        except (ValueError, TypeError):
+            self.mensagem.value = "Datas inválidas. Use o formato AAAA-MM-DD HH:MM."
+            self.page.update()
+            return
+
         # - validar o período;
         # - procurar viaturas disponíveis;
+        try:
+            viaturas = self.service.procurar_disponiveis(self.cidade.value, inicio, fim)
+        except ValueError as erro:
+            self.mensagem.value = str(erro)
+            self.page.update()
+            return
+
+        if not viaturas:
+            self.mensagem.value = "Não foram encontradas viaturas disponíveis para este período."
+            self.page.update()
+            return
+
         # - apresentar os resultados em cartões com opção "Ver viatura".
-        self.resultados.controls.clear()
-        self.mensagem.value = "TODO 25: concluir a pesquisa de disponibilidade."
+        for viatura in viaturas:
+            informacao = ft.Column(
+                [
+                    ft.Text(f"{viatura.marca} {viatura.modelo}", weight=ft.FontWeight.BOLD),
+                    ft.Text(f"Matrícula: {viatura.matricula}"),
+                    ft.Text(f"Categoria: {viatura.categoria_nome}"),
+                    ft.Text(f"Estação: {viatura.estacao_nome} ({viatura.cidade})"),
+                ],
+                spacing=2,
+            )
+
+            botao = ft.ElevatedButton(
+                "Ver viatura",
+                on_click=lambda e, v=viatura.id: self.abrir_viatura(v, inicio, fim),
+            )
+
+            linha = ft.Row(
+                [informacao, botao],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            )
+
+            self.resultados.controls.append(section_card(linha))
+
+        self.mensagem.value = f"{len(viaturas)} viatura(s) encontrada(s)."
         self.page.update()
 
     def abrir_viatura(self, viatura_id, inicio, fim):
-        ViaturaView(
-            self.page,
-            self.cliente_id,
-            viatura_id,
-            inicio,
-            fim,
-        ).show()
+        ViaturaView(self.page, self.cliente_id, viatura_id, inicio, fim).show()
