@@ -1,9 +1,3 @@
-# Este ficheiro define a View responsável por apresentar os detalhes de uma
-# viatura selecionada na pesquisa. Devem ser apresentados os dados relevantes
-# da viatura e da estação onde esta se encontra, incluindo o respetivo horário.
-# A partir desta View, o utilizador poderá avançar para a confirmação da reserva
-# correspondente ao período anteriormente selecionado.
-
 import flet as ft
 
 from services.estacao_service import EstacaoService
@@ -36,10 +30,8 @@ class ViaturaView:
                     section_card(self.conteudo),
                     ft.Row(
                         [
-                            ft.OutlinedButton(
-                                "Voltar à pesquisa", on_click=self.voltar),
-                            ft.ElevatedButton(
-                                "Reservar esta viatura", on_click=self.abrir_reserva),
+                            ft.OutlinedButton("Voltar à pesquisa", on_click=self.voltar),
+                            ft.ElevatedButton("Reservar esta viatura", on_click=self.abrir_reserva),
                         ]
                     ),
                 ],
@@ -49,25 +41,38 @@ class ViaturaView:
 
         # TODO 26:
         # - obter a viatura e a estação;
+        viatura = self.viatura_service.obter_viatura(self.viatura_id)
+        estacao = self.estacao_service.obter_estacao(viatura.estacao_id)
+
         # - preencher este painel com os dados reais;
         # - indicar marca, modelo, categoria, matrícula, ano, estação e horário.
-        self.conteudo.controls.extend(
-            [
-                ft.Text("TODO 26: carregar os dados reais da viatura."),
-                status_chip("DISPONIBILIDADE A CONFIRMAR"),
-                ft.Text(f"Período pretendido: {self.inicio} → {self.fim}"),
-            ]
-        )
+        titulo = ft.Text(f"{viatura.marca} {viatura.modelo}", size=20, weight=ft.FontWeight.BOLD)
+        matricula = ft.Text(f"Matrícula: {viatura.matricula}")
+        categoria = ft.Text(f"Categoria: {viatura.categoria_nome}")
+        ano = ft.Text(f"Ano: {viatura.ano}")
+
+        nome_estacao = ft.Text(f"Estação: {estacao.nome}")
+        morada_estacao = ft.Text(f"Morada: {estacao.morada}, {estacao.cidade}")
+        horario_estacao = ft.Text(f"Horário: {estacao.hora_abertura} - {estacao.hora_fecho}")
+
+        estado = status_chip("DISPONÍVEL PARA O PERÍODO PESQUISADO")
+        periodo = ft.Text(f"Período pretendido: {self.inicio} → {self.fim}")
+
+        self.conteudo.controls.append(titulo)
+        self.conteudo.controls.append(matricula)
+        self.conteudo.controls.append(categoria)
+        self.conteudo.controls.append(ano)
+        self.conteudo.controls.append(ft.Divider())
+        self.conteudo.controls.append(nome_estacao)
+        self.conteudo.controls.append(morada_estacao)
+        self.conteudo.controls.append(horario_estacao)
+        self.conteudo.controls.append(estado)
+        self.conteudo.controls.append(periodo)
+
         self.page.update()
 
     def abrir_reserva(self, e):
-        ReservaView(
-            self.page,
-            self.cliente_id,
-            self.viatura_id,
-            self.inicio,
-            self.fim,
-        ).show()
+        ReservaView(self.page, self.cliente_id, self.viatura_id, self.inicio, self.fim).show()
 
     def voltar(self, e):
         PesquisaView(self.page, self.cliente_id).show()
