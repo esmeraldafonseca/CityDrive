@@ -3,7 +3,6 @@ import flet as ft
 from services.estacao_service import EstacaoService
 from services.viatura_service import ViaturaService
 from views.reserva_view import ReservaView
-from views.pesquisa_view import PesquisaView
 from views.components import app_header, navigation_bar, section_card, status_chip
 
 
@@ -75,4 +74,6 @@ class ViaturaView:
         ReservaView(self.page, self.cliente_id, self.viatura_id, self.inicio, self.fim).show()
 
     def voltar(self, e):
+        # Import local para evitar a importação circular com pesquisa_view.
+        from views.pesquisa_view import PesquisaView
         PesquisaView(self.page, self.cliente_id).show()

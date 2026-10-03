@@ -1,7 +1,6 @@
 import flet as ft
 
 from services.reserva_service import ReservaService
-from views.pesquisa_view import PesquisaView
 from views.components import app_header, navigation_bar, section_card
 
 
@@ -66,4 +65,6 @@ class ReservaView:
         self.page.update()
 
     def voltar(self, e):
+        # Import local para evitar a importação circular com pesquisa_view.
+        from views.pesquisa_view import PesquisaView
         PesquisaView(self.page, self.cliente_id).show()
