@@ -46,11 +46,7 @@ CREATE TABLE reservas (
     inicio DATETIME NOT NULL,
     fim DATETIME NOT NULL,
     estado VARCHAR(20) NOT NULL DEFAULT 'CONFIRMADA',
-    criada_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_reserva_cliente FOREIGN KEY (cliente_id) REFERENCES clientes(id),
-    CONSTRAINT fk_reserva_viatura FOREIGN KEY (viatura_id) REFERENCES viaturas(id),
-    CONSTRAINT chk_reserva_periodo CHECK (inicio < fim),
-    CONSTRAINT chk_reserva_estado CHECK (estado IN ('PENDENTE','CONFIRMADA','EM_CURSO','CONCLUIDA','CANCELADA'))
+    criada_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_estacoes_cidade ON estacoes(cidade);

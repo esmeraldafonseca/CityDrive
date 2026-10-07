@@ -1,9 +1,3 @@
-# Este ficheiro define a View inicial da aplicação CityDrive. É responsável por
-# apresentar os campos necessários para identificar o cliente e responder à
-# ação do botão de entrada. A View deve recolher os valores introduzidos e
-# utilizar o Service apropriado, não devendo executar diretamente instruções
-# SQL nem implementar regras que pertencem às outras camadas.
-
 import flet as ft
 
 from services.cliente_service import ClienteService
@@ -33,8 +27,7 @@ class LoginView:
                 self.email,
                 self.nome,
                 self.telefone,
-                ft.ElevatedButton("Entrar na aplicação",
-                                  on_click=self.login, width=220),
+                ft.ElevatedButton("Entrar na aplicação", on_click=self.login, width=220),
                 self.mensagem,
             ],
             spacing=14,
@@ -47,11 +40,6 @@ class LoginView:
                 ft.Text("2. Pesquise por cidade e período."),
                 ft.Text("3. Consulte a estação e o horário."),
                 ft.Text("4. Confirme a reserva da viatura."),
-                ft.Divider(),
-                ft.Text(
-                    "A aplicação está parcialmente implementada. "
-                    "Os TODO fazem parte do Trabalho Prático 4(Depois elimina isso no trabalho final)."
-                ),
             ],
             spacing=10,
         )
@@ -72,5 +60,29 @@ class LoginView:
     def login(self, e):
         # TODO 24: procurar o cliente pelo email; se não existir, criar.
         # Depois abrir a área de pesquisa com o ID do cliente.
-        self.mensagem.value = "TODO 24: concluir a entrada do cliente 😂 By: Prof Sebilson."
-        self.page.update()
+        self.mensagem.value = ""
+
+        if self.email.value:
+            email = self.email.value.strip()
+        else:
+            email = ""
+
+        if not email:
+            self.mensagem.value = "O email é obrigatório."
+            self.page.update()
+            return
+
+        cliente = self.service.obter_por_email(email)
+
+        if cliente is None:
+            try:
+                cliente = self.service.criar_cliente(
+                    self.nome.value, self.email.value, self.telefone.value
+                )
+            except ValueError as erro:
+                self.mensagem.value = str(erro)
+                self.page.update()
+                return
+
+        from views.pesquisa_view import PesquisaView
+        PesquisaView(self.page, cliente.id).show()
